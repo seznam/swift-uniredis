@@ -11,6 +11,7 @@ public class UniRedis {
 	public let host: String
 	public var port: Int32 = 6379
 	public var db: Int = 0
+	public let sentinel: Bool
 	var password: String?
 	var timeout: UniSocketTimeout = (connect: 4, read: 4, write: 4)
 
@@ -27,25 +28,27 @@ public class UniRedis {
 	}
 
 	public init(_ url: String) throws {
-		guard let match = url =~ "^(?:redis://)?(?::([^@]+)@)?([^:/]+)(?::([0-9]+))?(?:/([0-9]+))?$", match.count > 0 else {
+		guard let match = url =~ "^(?:redis(\\+sentinel)?://)?(?::([^@]+)@)?([^:/]+)(?::([0-9]+))?(?:/([0-9]+))?$", match.count > 0 else {
 			throw UniRedisError.error(detail: "failed to parse redis url '\(url)'")
 		}
-		host = match[0].groups[1]
-		if match[0].groups[2].characters.count > 0 {
-			port = Int32(match[0].groups[2])!
-		}
+		sentinel = (match[0].groups[0].characters.count > 0) ? true:false
+		host = match[0].groups[2]
 		if match[0].groups[3].characters.count > 0 {
-			db = Int(match[0].groups[3])!
+			port = Int32(match[0].groups[3])!
 		}
-		if match[0].groups[0].characters.count > 0 {
-			password = match[0].groups[0]
+		if match[0].groups[4].characters.count > 0 {
+			db = Int(match[0].groups[4])!
+		}
+		if match[0].groups[1].characters.count > 0 {
+			password = match[0].groups[1]
 		}
 	}
 
-	public init(host: String, port: Int32 = 6379, db: Int = 0, password: String? = nil) {
+	public init(host: String, port: Int32 = 6379, db: Int = 0, sentinel: Bool = false, password: String? = nil) {
 		self.host = host
 		self.port = port
 		self.db = db
+		self.sentinel = sentinel
 		self.password = password
 	}
 
@@ -53,6 +56,7 @@ public class UniRedis {
 		self.host = redis.host
 		self.port = redis.port
 		self.db = redis.db
+		self.sentinel = redis.sentinel
 		self.password = redis.password
 	}
 
@@ -61,7 +65,8 @@ public class UniRedis {
 			throw UniRedisError.error(detail: "redis already connected")
 		}
 		do {
-			sock = try UniSocket(type: .tcp, peer: host, port: port, timeout: timeout)
+			let (masterHost, masterPort) = try getMasterFromSentinel()
+			sock = try UniSocket(type: .tcp, peer: masterHost, port: masterPort, timeout: timeout)
 			try sock!.attach()
 			if let p = password {
 				_ = try cmd("AUTH", params: [ p ])
