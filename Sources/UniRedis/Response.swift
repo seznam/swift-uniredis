@@ -12,7 +12,7 @@ public struct UniRedisResponse {
 	public let type: UniRedisResponseType
 	public let content: Any?
 
-	private func throwOnError() throws {
+	public func throwOnError() throws {
 		guard type == .error else {
 			return
 		}
