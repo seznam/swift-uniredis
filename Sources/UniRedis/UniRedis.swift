@@ -165,7 +165,7 @@ public class UniRedis {
 				}
 				if inTransaction {
 					guard response!.type == .string, let result = response!.content as? String, result == "QUEUED" else {
-						throw UniRedisError.error(detail: "unexpected redis response \(response)")
+						throw UniRedisError.error(detail: "unexpected redis response \(response!)")
 					}
 				}
 			} catch ParserError.incomplete {
