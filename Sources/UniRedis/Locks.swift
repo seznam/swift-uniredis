@@ -77,7 +77,7 @@ extension UniRedis {
 		return locked
 	}
 
-	public func unlockWrite(id: String = "lock", owner: String? = nil, expire: UInt = 60) throws -> Void {
+	public func unlockWrite(id: String = "lock", owner: String? = nil) throws -> Void {
 		let member: String
 		if let string = owner {
 			member = string
