@@ -34,6 +34,13 @@ extension UniRedis {
 		return locked
 	}
 
+	public func lockReadRefresh(id: String = "lock", owner: String? = nil, expire: UInt = 60) throws -> Void {
+		let me = try lockOwner(owner)
+		if try self.cmd("SISMEMBER", params: [ "\(id).readlock", me ]).toBool() {
+			_ = try self.cmd("EXPIRE", params: [ "\(id).readlock", "\(expire)" ])
+		}
+	}
+
 	public func unlockRead(id: String = "lock", owner: String? = nil, expire: UInt = 60) throws -> Void {
 		let me = try lockOwner(owner)
 		_ = try self.multi {
@@ -64,6 +71,13 @@ extension UniRedis {
 			break
 		}
 		return locked
+	}
+
+	public func lockWriteRefresh(id: String = "lock", owner: String? = nil, expire: UInt = 60) throws -> Void {
+		let me = try lockOwner(owner)
+		if let locked = try self.cmd("GET", params: [ "\(id).writelock" ]).toString(), locked == me {
+			_ = try self.cmd("EXPIRE", params: [ "\(id).writelock", "\(expire)" ])
+		}
 	}
 
 	public func unlockWrite(id: String = "lock", owner: String? = nil) throws -> Void {
