@@ -38,7 +38,7 @@ public struct UniRedisResponse {
 		if type == .integer, let int = content as? Int {
 			return int
 		} else if type == .string {
-			guard let string = content as? String else {
+			guard let string = content as? String, !string.isEmpty else {
 				return nil
 			}
 			guard let int = Int(string) else {
