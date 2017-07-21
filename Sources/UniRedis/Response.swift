@@ -51,16 +51,18 @@ public struct UniRedisResponse {
 
 	public func toDouble() throws -> Double? {
 		try throwOnError()
-		guard type == .string else {
-			throw UniRedisError.error(detail: "unexpected response type \(type)")
+		if type == .integer, let int = content as? Int {
+			return Double(int)
+		} else if type == .string {
+			guard let string = content as? String, !string.isEmpty else {
+				return nil
+			}
+			guard let double = Double(string) else {
+				throw UniRedisError.error(detail: "failed to convert response to double")
+			}
+			return double
 		}
-		guard let string = content as? String, !string.isEmpty else {
-			return nil
-		}
-		guard let double = Double(string) else {
-			throw UniRedisError.error(detail: "failed to convert response to double")
-		}
-		return double
+		throw UniRedisError.error(detail: "unexpected response type \(type)")
 	}
 
 	public func toString() throws -> String? {
