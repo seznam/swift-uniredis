@@ -49,6 +49,13 @@ public struct UniRedisResponse {
 		throw UniRedisError.error(detail: "unexpected response type \(type)")
 	}
 
+	public func toUInt() throws -> UInt? {
+		guard let int = try toInt() else {
+			return nil
+		}
+		return UInt(int)
+	}
+
 	public func toDouble() throws -> Double? {
 		try throwOnError()
 		if type == .integer, let int = content as? Int {
