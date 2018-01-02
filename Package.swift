@@ -1,9 +1,16 @@
+// swift-tools-version:4.0
+
 import PackageDescription
 
 let package = Package(
 	name: "UniRedis",
+	products: [
+		.library(name: "UniRedis", targets: ["UniRedis"])
+	],
 	dependencies: [
-		.Package(url: "git@gitlab.kancelar.seznam.cz:pvs/swift-regex", majorVersion: 0),
-		.Package(url: "git@gitlab.kancelar.seznam.cz:pvs/swift-unisocket", majorVersion: 0, minor: 9),
+		.package(url: "git@gitlab.kancelar.seznam.cz:pvs/swift-unisocket", from: "0.10.0")
+	],
+	targets: [
+		.target(name: "UniRedis", dependencies: ["UniSocket"])
 	]
 )
