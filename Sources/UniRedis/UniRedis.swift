@@ -1,5 +1,4 @@
 import Foundation
-import Regex
 import UniSocket
 
 public enum UniRedisError: Error {
@@ -28,19 +27,20 @@ public class UniRedis {
 	}
 
 	public init(_ url: String) throws {
-		guard let match = url =~ "^(?:redis(\\+sentinel)?://)?(?::([^@]+)@)?([^:/]+)(?::([0-9]+))?(?:/([0-9]+))?$", match.count > 0 else {
+		let m = try url.match("^(?:redis(\\+sentinel)?://)?(?::([^@]+)@)?([^:/]+)(?::([0-9]+))?(?:/([0-9]+))?$")
+		guard let match = m, match.count == 5 else {
 			throw UniRedisError.error(detail: "failed to parse redis url '\(url)'")
 		}
-		sentinel = (match[0].groups[0].characters.count > 0) ? true:false
-		host = match[0].groups[2]
-		if match[0].groups[3].characters.count > 0 {
-			port = Int32(match[0].groups[3])!
+		sentinel = (match[0] != nil) ? true:false
+		host = match[2]!
+		if let m = match[3] {
+			port = Int32(m)!
 		}
-		if match[0].groups[4].characters.count > 0 {
-			db = Int(match[0].groups[4])!
+		if let m = match[4] {
+			db = Int(m)!
 		}
-		if match[0].groups[1].characters.count > 0 {
-			password = match[0].groups[1]
+		if let m = match[1] {
+			password = m
 		}
 	}
 
