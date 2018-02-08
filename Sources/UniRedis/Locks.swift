@@ -1,15 +1,15 @@
 import Foundation
-import UniSocket
+import Resolver
 
 extension UniRedis {
 
 	private func lockOwner(_ owner: String? = nil) throws -> String {
 		if let own = owner {
 			return own
-		} else if let host = UniSocket.gethostname() {
+		} else if let host = Resolver.getHostname() {
 			return host
 		} else {
-			throw UniRedisError.error(detail: "gethostname() failed")
+			throw UniRedisError.error(detail: "Resolver.getHostname() failed")
 		}
 	}
 

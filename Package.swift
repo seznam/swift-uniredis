@@ -8,9 +8,10 @@ let package = Package(
 		.library(name: "UniRedis", targets: ["UniRedis"])
 	],
 	dependencies: [
-		.package(url: "git@gitlab.kancelar.seznam.cz:pvs/swift-unisocket", from: "0.10.0")
+		.package(url: "git@gitlab.kancelar.seznam.cz:pvs/swift-unisocket", from: "0.12.0"),
+		.package(url: "git@gitlab.kancelar.seznam.cz:pvs/swift-resolver", from: "0.1.0")
 	],
 	targets: [
-		.target(name: "UniRedis", dependencies: ["UniSocket"])
+		.target(name: "UniRedis", dependencies: ["UniSocket", "Resolver"])
 	]
 )
