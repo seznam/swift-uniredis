@@ -5,6 +5,10 @@ public enum UniRedisError: Error {
 	case error(detail: String)
 }
 
+public func ==(lhs: UniRedis, rhs: UniRedis) -> Bool {
+	return (lhs.host == rhs.host) && (lhs.port == rhs.port) && (lhs.db == rhs.db) && (lhs.sentinel == rhs.sentinel)
+}
+
 public class UniRedis {
 
 	public let host: String
