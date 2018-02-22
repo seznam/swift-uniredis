@@ -5,14 +5,18 @@ public enum UniRedisError: Error {
 	case error(detail: String)
 }
 
+public func ==(lhs: UniRedis, rhs: UniRedis) -> Bool {
+	return (lhs.host == rhs.host) && (lhs.port == rhs.port) && (lhs.db == rhs.db) && (lhs.sentinel == rhs.sentinel)
+}
+
 public class UniRedis {
 
 	public let host: String
 	public var port: Int32 = 6379
 	public var db: Int = 0
 	public let sentinel: Bool
-	var password: String?
-	var timeout: UniSocketTimeout = (connect: 4, read: 4, write: 4)
+	public var password: String?
+	public var timeout: UniSocketTimeout = (connect: 4, read: 4, write: 4)
 
 	var sock: UniSocket?
 	var inBuffer = [UInt8]()
