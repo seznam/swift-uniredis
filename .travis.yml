@@ -6,6 +6,9 @@ matrix:
     - os: osx
       osx_image: xcode9.3
     - os: linux
+      script: swift test
+      services:
+        - redis-server
       dist: trusty
       install:
         - wget https://swift.org/builds/swift-4.1.1-release/ubuntu1404/swift-4.1.1-RELEASE/swift-4.1.1-RELEASE-ubuntu14.04.tar.gz
