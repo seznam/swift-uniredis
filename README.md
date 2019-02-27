@@ -21,9 +21,9 @@ let key = "test"
 let value = Date().timeIntervalSince1970
 
 do {
-	redis = try UniRedis("redis://localhost:6379")
+	let redis = try UniRedis("redis://localhost:6379")
 	try redis.connect()
-	try redis.cmd("SETEX", params: [ key, 60, "\(value)" ])
+	try redis.cmd("SETEX", params: [ key, "60", "\(value)" ])
 	let result = try redis.cmd("GET", params: [ key ]).toInt()
 	print("key '\(key)' has value \(result)")
 	redis.disconnect()
@@ -43,7 +43,7 @@ let host = "redis.seznam.net"
 let port = 6379
 
 do {
-	redis = try UniRedis(host: host, port: port, db: 2)
+	let redis = try UniRedis(host: host, port: port, db: 2)
 	redis.timeout = (connect: 3, read: 2, write: 1)
 	try redis.connect()
 	let response = try redis.multi {
@@ -74,13 +74,13 @@ import UniRedis
 let password = "RedisRequirePassword"
 
 do {
-	redis = try UniRedis("redis://\(password)@localhost/10")
+	let redis = try UniRedis("redis://\(password)@localhost/10")
 	try redis.connect()
 	guard try redis.lockWrite(expire: 5, timeout: 5) else {
 		throw UniRedisError.error(detail: "failed to get write lock")
 	}
 	if let value = try redis.cmd("LPOP", params: [ "queue" ]).toString() {
-		_ = try redis.cmd("SETEX", params: [ value, 5, "\(Date().timeIntervalSince1970)" ])
+		_ = try redis.cmd("SETEX", params: [ value, "5", "\(Date().timeIntervalSince1970)" ])
 	}
 	try? redis.unlockWrite()
 	redis.disconnect()
@@ -97,7 +97,7 @@ import UniRedis
 let hostname = "sentinel.host.seznam.net"
 
 do {
-	redis = try UniRedis("redis+sentinel://\(hostname)")
+	let redis = try UniRedis("redis+sentinel://\(hostname)")
 	try redis.connect()
 	let response = try redis.cmd("ROLE")
 	guard response.type == .array, let result = response.content as? [UniRedisResponse], result.count == 3 else {
