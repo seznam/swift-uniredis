@@ -12,6 +12,7 @@ let package = Package(
 		.package(url: "https://github.com/seznam/swift-resolver", from: "0.2.0")
 	],
 	targets: [
-		.target(name: "UniRedis", dependencies: ["UniSocket", "Resolver"])
+		.target(name: "UniRedis", dependencies: ["UniSocket", "Resolver"]),
+		.testTarget(name: "UniRedisTests", dependencies: ["UniRedis", "UniSocket"])
 	]
 )
