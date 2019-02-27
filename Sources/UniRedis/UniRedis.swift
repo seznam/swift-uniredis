@@ -171,12 +171,6 @@ public class UniRedis {
 		var response: UniRedisResponse?
 		while response == nil {
 			do {
-				let input = try s.recv()
-				if debug, let dbg = String(data: input, encoding: .utf8) {
-					print("resp raw response:")
-					print(dbg)
-				}
-				inBuffer.append(contentsOf: [UInt8](input))
 				if debug, let dbg = String(data: Data(bytes: inBuffer, count: inBuffer.count), encoding: .utf8) {
 					print("input buffer:")
 					print(dbg)
@@ -192,11 +186,21 @@ public class UniRedis {
 					}
 				}
 			} catch ParserError.incomplete {
-				continue
+				// just pass through and try to read more data below
 			} catch ParserError.invalid(let at) {
 				throw UniRedisError.error(detail: "invalid redis response at '\(at)'")
-			} catch UniSocketError.error(let detail) {
-				throw UniRedisError.error(detail: "socket error while reading response, \(detail)")
+			}
+			if response == nil {
+				do {
+					let input = try s.recv()
+					if debug, let dbg = String(data: input, encoding: .utf8) {
+						print("resp raw response:")
+						print(dbg)
+					}
+					inBuffer.append(contentsOf: [UInt8](input))
+				} catch UniSocketError.error(let detail) {
+					throw UniRedisError.error(detail: "socket error while reading response, \(detail)")
+				}
 			}
 		}
 		return response!
