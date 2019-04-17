@@ -114,6 +114,32 @@ do {
 }
 ```
 
+Utilize messaging capabilities of redis:
+
+```swift
+import UniRedis
+
+do {
+	let channel = "news"
+	let client1 = try UniRedis("redis://localhost")
+	let client2 = try UniRedis("redis://localhost")
+	try client1.connect()
+	try client2.connect()
+	try client1.subscribe(channel: [ channel ])
+	try client2.publish(channel: channel, message: "weather report")
+	if let message = try client1.msg() {
+		print("got message '\(message.message)' on channel '\(message.channel)'")
+	}
+	try client1.unsubscribe(channel: [ channel ])
+	client1.disconnect()
+	client2.disconnect()
+} catch UniRedisError.error(let detail) {
+	print(detail)
+} catch {
+	print("unexpected exception")
+}
+```
+
 ## Credits
 
 Written by [Daniel Bilik](https://github.com/ddbilik/), copyright [Seznam.cz](https://onas.seznam.cz/en/), licensed under the terms of the Apache License 2.0.
