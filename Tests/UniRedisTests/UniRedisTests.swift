@@ -13,6 +13,7 @@ class UniRedisTests: XCTestCase {
 		("testSet", testSet),
 		("testHash", testHash),
 		("testSortedSet", testSortedSet),
+		("testPubSub", testPubSub),
 		("testMulti", testMulti),
 		("testPipeline", testPipeline),
 		("testReadLock", testReadLock),
@@ -161,6 +162,30 @@ class UniRedisTests: XCTestCase {
 			print("unexpected exception")
 		}
 		XCTAssert(count! == 2 && ttl! > 4 && score! < -1.6)
+	}
+
+	func testPubSub() {
+		let db: String = "\(Int(Date().timeIntervalSince1970) % 15)"
+		let channel = "swift test channel"
+		let publishedMessage = "swift test message"
+		var receivedMessage: UniRedisMessage? = nil
+		do {
+			let client1 = try UniRedis("redis://localhost/\(db)")
+			let client2 = try UniRedis("redis://localhost/\(db)")
+			try client1.connect()
+			try client2.connect()
+			try client1.subscribe(channel: [ channel ])
+			try client2.publish(channel: channel, message: publishedMessage)
+			receivedMessage = try client1.msg()
+			try client1.unsubscribe(channel: [ channel ])
+			client1.disconnect()
+			client2.disconnect()
+		} catch UniRedisError.error(let detail) {
+			print(detail)
+		} catch {
+			print("unexpected exception")
+		}
+		XCTAssert(receivedMessage != nil && receivedMessage!.message == publishedMessage)
 	}
 
 	func testMulti() {
