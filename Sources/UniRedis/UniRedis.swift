@@ -44,6 +44,8 @@ public class UniRedis {
 	var inTransaction: Bool = false
 	var inPipeline: Bool = false
 	var pipelineCount: Int = 0
+	var subscribedChannel: Set<String> = []
+	var subscribedPattern: Set<String> = []
 
 	enum ParserError: Error {
 		case incomplete
