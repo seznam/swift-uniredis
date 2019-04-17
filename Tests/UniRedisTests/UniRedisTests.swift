@@ -169,14 +169,17 @@ class UniRedisTests: XCTestCase {
 		let channel = "swift test channel"
 		let publishedMessage = "swift test message"
 		var receivedMessage: UniRedisMessage? = nil
+		var noMessage: UniRedisMessage? = nil
 		do {
 			let client1 = try UniRedis("redis://localhost/\(db)")
 			let client2 = try UniRedis("redis://localhost/\(db)")
+			client1.timeout = (connect: 1, read: 1, write: 1)
 			try client1.connect()
 			try client2.connect()
 			try client1.subscribe(channel: [ channel ])
 			try client2.publish(channel: channel, message: publishedMessage)
 			receivedMessage = try client1.msg()
+			noMessage = try client1.msg()
 			try client1.unsubscribe(channel: [ channel ])
 			client1.disconnect()
 			client2.disconnect()
@@ -185,7 +188,7 @@ class UniRedisTests: XCTestCase {
 		} catch {
 			print("unexpected exception")
 		}
-		XCTAssert(receivedMessage != nil && receivedMessage!.message == publishedMessage)
+		XCTAssert(noMessage == nil && receivedMessage != nil && receivedMessage!.message == publishedMessage)
 	}
 
 	func testMulti() {
