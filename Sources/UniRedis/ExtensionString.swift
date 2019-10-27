@@ -34,8 +34,8 @@ extension String {
 			if m[0].range(at: g).location == NSNotFound {
 				groups.append(nil)
 			} else {
-				let start = String.UTF16Index(encodedOffset: m[0].range(at: g).location)
-				let end = String.UTF16Index(encodedOffset: m[0].range(at: g).location + m[0].range(at: g).length)
+				let start = String.UTF16View.Index(encodedOffset: m[0].range(at: g).location)
+				let end = String.UTF16View.Index(encodedOffset: m[0].range(at: g).location + m[0].range(at: g).length)
 				groups.append(String(self[start..<end]))
 			}
 			g += 1
