@@ -143,3 +143,7 @@ do {
 ## Credits
 
 Written by [Daniel Bilik](https://github.com/ddbilik/), copyright [Seznam.cz](https://onas.seznam.cz/en/), licensed under the terms of the Apache License 2.0.
+
+Thanks to Alexander Solncev for Swift 5 compatibility.
+
+Thanks to Stephen Mitchell for "pmessage" support.
