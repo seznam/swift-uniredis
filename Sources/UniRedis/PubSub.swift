@@ -81,7 +81,7 @@ extension UniRedis {
 		_ = try cmd("PUBLISH", params: [ channel, message ]).toInt()
 	}
 
-public func msg(debug: Bool = false) throws -> UniRedisMessage? {
+	public func msg(debug: Bool = false) throws -> UniRedisMessage? {
 		var message: UniRedisMessage? = nil
 		let from = Date().timeIntervalSince1970
 		do {
@@ -92,16 +92,16 @@ public func msg(debug: Bool = false) throws -> UniRedisMessage? {
 			guard let r0 = try mresp[0].toString(), (r0 == "message" &&  mresp.count == 3) || (r0 == "pmessage" && mresp.count == 4) else {
 				throw UniRedisError.error(detail: "unexpected redis response - expected message or pmessage")
 			}
-		    switch r0 {
-	        case "pmessage":
-	            if let r1 = try mresp[1].toString(), let r2 = try mresp[2].toString(), let r3 = try mresp[3].toString() {
+			switch r0 {
+			case "pmessage":
+				if let r1 = try mresp[1].toString(), let r2 = try mresp[2].toString(), let r3 = try mresp[3].toString() {
 					message = UniRedisMessage(channel: r2, pattern: r1, message: r3)
 				}
-	        default:
-	            if let r1 = try mresp[1].toString(), let r2 = try mresp[2].toString() {
+			default:
+				if let r1 = try mresp[1].toString(), let r2 = try mresp[2].toString() {
 					message = UniRedisMessage(channel: r1, pattern: nil, message: r2)
 				}
-	        }
+			}
 		} catch UniSocketError.error(let detail) {
 			// NOTE: sort-of hack, detect read timeout by measuring delay and throw only on other socket errors
 			let to = Date().timeIntervalSince1970
