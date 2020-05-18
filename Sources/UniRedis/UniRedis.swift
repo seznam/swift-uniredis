@@ -151,7 +151,12 @@ public class UniRedis {
 		}
 		try sendBuffer()
 		inBuffer.removeAll(keepingCapacity: true)
-		return try readResponse(debug: debug)
+		let r = try readResponse(debug: debug)
+		guard r.type != .error else {
+			let msg = r.content as? String
+			throw UniRedisError.error(detail: msg!)
+		}
+		return r
 	}
 
 	func sendBuffer() throws -> Void {
