@@ -8,6 +8,7 @@ class UniRedisTests: XCTestCase {
 	static var allTests = [
 		("testRefused", testRefused),
 		("testTimeout", testTimeout),
+		("testError", testError),
 		("testString", testString),
 		("testList", testList),
 		("testSet", testSet),
@@ -53,6 +54,22 @@ class UniRedisTests: XCTestCase {
 		let to = Date().timeIntervalSince1970
 		let duration = to - from
 		XCTAssert(exception != nil && exception!.hasPrefix("socket error while connecting") && duration >= Double(t) && duration < Double(t + 1))
+	}
+
+	func testError() {
+		var exception: String? = nil
+		do {
+			let redis = try UniRedis("redis://localhost")
+			try redis.connect()
+			_ = try redis.cmd("COMMAND THAT SHOULD NOT EXIST EVER")
+			redis.disconnect()
+		} catch UniRedisError.error(let detail) {
+			print(detail)
+			exception = detail
+		} catch {
+			print("unexpected error")
+		}
+		XCTAssert(exception != nil && exception!.hasPrefix("ERR unknown command"))
 	}
 
 	func testString() {
