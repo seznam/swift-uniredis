@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Seznam.cz, a.s.
+ * Copyright 2017-2020 Seznam.cz, a.s.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  */
 
 /*
- * Author: Daniel Bilik (daniel.bilik@firma.seznam.cz)
+ * Author: Daniel Fojt (daniel.fojt2@firma.seznam.cz)
  */
 
 import Foundation
