@@ -65,16 +65,18 @@ do {
 }
 ```
 
-Connect to local password-protected redis storage and update lock-protected
+Connect to local username and password protected redis storage and update lock-protected
 content in database 10:
 
 ```swift
 import UniRedis
 
+let username = "optionalUsername"
 let password = "RedisRequirePassword"
 
 do {
-	let redis = try UniRedis("redis://\(password)@localhost/10")
+	let redis = try UniRedis("redis://\(username):\(password)@localhost/10")
+	// or let redis = try UniRedis("redis://\(password)@localhost/10")
 	try redis.connect()
 	guard try redis.lockWrite(expire: 5, timeout: 5) else {
 		throw UniRedisError.error(detail: "failed to get write lock")
