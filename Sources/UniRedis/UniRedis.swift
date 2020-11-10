@@ -54,22 +54,22 @@ public class UniRedis {
 	}
 
 	public init(_ url: String) throws {
-		guard let match = try url.match("^(?:redis(\\+sentinel)?://)?(?:([^:@]+):)?(?:([^@]+)@)?([^:/]+)(?::([0-9]+))?(?:/([0-9]+))?$"), match.count == 6 else {
-			throw UniRedisError.error(detail: "failed to parse redis url '\(url)'")
-		}
+		guard let match = try url.match("^(?:redis(\\+sentinel)?://)?(?:([^@]+)@)?([^:/]+)(?::([0-9]+))?(?:/([0-9]+))?$"), match.count == 5 else {
 		sentinel = (match[0] != nil) ? true:false
-		host = match[3]!
-		if let m = match[4] {
+		host = match[2]!
+		if let m = match[3] {
 			port = Int32(m)!
 		}
-		if let m = match[5] {
+		if let m = match[4] {
 			db = Int(m)!
 		}
-		if let m = match[2] {
-			password = m
-		}
 		if let m = match[1] {
-			username = m
+			if let auth = try m.match("^(.+):(.+)?$") {
+			    username = auth[1]
+			    password = auth[2]
+			} else {
+			    password = m
+			}
 		}
 	}
 
