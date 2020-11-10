@@ -55,6 +55,8 @@ public class UniRedis {
 
 	public init(_ url: String) throws {
 		guard let match = try url.match("^(?:redis(\\+sentinel)?://)?(?:([^@]+)@)?([^:/]+)(?::([0-9]+))?(?:/([0-9]+))?$"), match.count == 5 else {
+			throw UniRedisError.error(detail: "failed to parse redis url '\(url)'")
+		}
 		sentinel = (match[0] != nil) ? true:false
 		host = match[2]!
 		if let m = match[3] {
@@ -65,10 +67,10 @@ public class UniRedis {
 		}
 		if let m = match[1] {
 			if let auth = try m.match("^(.+):(.+)?$") {
-			    username = auth[1]
-			    password = auth[2]
+				username = auth[1]
+				password = auth[2]
 			} else {
-			    password = m
+				password = m
 			}
 		}
 	}
