@@ -35,6 +35,7 @@ public class UniRedis {
 	public var port: Int32 = 6379
 	public var db: Int = 0
 	public let sentinel: Bool
+	public var username: String?
 	public var password: String?
 	public var timeout: UniSocketTimeout = (connect: 4, read: 4, write: 4)
 
@@ -65,15 +66,21 @@ public class UniRedis {
 			db = Int(m)!
 		}
 		if let m = match[1] {
-			password = m
+			if let auth = try m.match("^(.+):(.+)?$") {
+				username = auth[1]
+				password = auth[2]
+			} else {
+				password = m
+			}
 		}
 	}
 
-	public init(host: String, port: Int32 = 6379, db: Int = 0, sentinel: Bool = false, password: String? = nil) {
+	public init(host: String, port: Int32 = 6379, db: Int = 0, sentinel: Bool = false, username: String? = nil, password: String? = nil) {
 		self.host = host
 		self.port = port
 		self.db = db
 		self.sentinel = sentinel
+		self.username = username
 		self.password = password
 	}
 
@@ -93,7 +100,10 @@ public class UniRedis {
 			let (masterHost, masterPort) = try getMasterFromSentinel()
 			sock = try UniSocket(type: .tcp, peer: masterHost, port: masterPort, timeout: timeout)
 			try sock!.attach()
-			if let p = password {
+			if let username = username {
+				_ = try cmd("AUTH", params: [ username, password ?? "" ])
+			}
+			else if let p = password {
 				_ = try cmd("AUTH", params: [ p ])
 			}
 			_ = try cmd("SELECT", params: [ "\(db)" ])
